@@ -20,7 +20,7 @@ from os import X_OK
 import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
-from vortex_generator_2 import Phase, PhaseMatrix
+from vortex_generator_2 import CreatSpatialAxis, CreateSpatialGrid, BesselVortexMask
 
 # Import the SLM Display SDK:
 import detect_heds_module_path
@@ -44,37 +44,37 @@ from showSLMPreview import showSLMPreview
 showSLMPreview(slm, scale=0.0)
 
 #setup parameters
-m = 8E-4           #pixel size in sm
+PixelSize = 8E-4           #pixel size in sm
 dataWidth = slm.width_px
 dataHeight = slm.height_px
 
-f_s = 50.0 
-l_s = 1.55E-4
+lenseFocalDistance = 50.0 
+waveLength = 1.55E-4
 #d = 1E10 #distance sm
 
 #vortex parameters
-ri = 1.0        #vortex radius
-wi = 0.1      #ring width
-v_Ch = 2.0      #vortex charge
-centerX = 0.0/m   #Vortex center
-centerY = 0.0/m   
+vortexRadius = 1.0        #vortex radius
+vortexWidth = 0.1      #ring width
+vortexCharge = 2.0      #vortex charge
+centerX = 0.0/PixelSize   #Vortex center
+centerY = 0.0/PixelSize   
 
 #scaling
-f = f_s/m            
-l = l_s/m  
+lenseFocalDistanceScaled = lenseFocalDistance/PixelSize            
+waveLengthScaled = waveLength/PixelSize  
 
-v_r =  ri/m                
-v_w = wi/m               
+vortexRadiusScaled =  vortexRadius/PixelSize                
+vortexWidthScaled = vortexWidth/PixelSize               
 
-k = 2*pi/l                         #tot-Wave vector
-v_Kr = k*v_r/f                     #r-Wave vector
-w = (k**2 * v_w**2) / (16 * f**2)  #Vortex width    
+vortexWaveVector = 2*pi/waveLengthScaled                         #tot-Wave vector
+vortexWaveVectorRadial = vortexWaveVector*vortexRadiusScaled/lenseFocalDistanceScaled                     #r-Wave vector
+w = (vortexWaveVector**2 * vortexWidthScaled**2) / (16 * lenseFocalDistanceScaled**2)  #Vortex width    
 
 dataWidth = slm.width_px
 dataHeight = slm.height_px
-
-x2, y2, r = PhaseMatrix(dataWidth, dataHeight, centerX, centerY)
-raw_Phase = Phase(v_Kr, v_Ch, r, x2, y2)
+x_axis, y_axis = CreatSpatialAxis(dataWidth, dataHeight, PixelSize)
+x_grid_centered, y_grid_centered, r = CreateSpatialGrid(x_axis, y_axis, centerX, centerY, dataWidth, dataHeight, PixelSize)
+raw_Phase = BesselVortexMask(vortexWaveVectorRadial, vortexWaveVector, vortexCharge, r, x_grid_centered, y_grid_centered)
 
 # Reserve memory for the phase data matrix.
 # Use data type single to optimize performance:
