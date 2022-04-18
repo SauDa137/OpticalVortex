@@ -3,17 +3,17 @@ import numpy as np
 from numpy import pi
 import matplotlib.pyplot as plt
 
-def CreatSpatialAxis(dataWidth, dataHeight, PixelSize):
-    x_axis = np.linspace(0,dataWidth*PixelSize,dataWidth)
-    y_axis = np.linspace(0,dataHeight*PixelSize,dataHeight)
+def CreatSpatialAxis(dataWidth, dataHeight):
+    x_axis = np.linspace(0,dataWidth,dataWidth)
+    y_axis = np.linspace(0,dataHeight,dataHeight)
     return x_axis, y_axis
 
-def CreateSpatialGrid(x_axis, y_axis, centerX, centerY, dataWidth, dataHeight, PixelSize):
+def CreateSpatialGrid(x_axis, y_axis, centerX, centerY, dataWidth, dataHeight):
     #create spatial grid
     x_grid, y_grid = np.meshgrid(x_axis, y_axis)
     #centered grid
-    x_grid_centered = x_grid - dataWidth*PixelSize/2+centerX
-    y_grid_centered = y_grid - dataHeight*PixelSize/2+centerY
+    x_grid_centered = x_grid - dataWidth/2+centerX
+    y_grid_centered = y_grid - dataHeight/2+centerY
     r = np.sqrt(x_grid_centered**2+y_grid_centered**2)
     return x_grid_centered, y_grid_centered, r
 
